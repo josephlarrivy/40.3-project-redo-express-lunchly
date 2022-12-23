@@ -4,9 +4,8 @@ const db = require("../db");
 const Reservation = require("./reservation");
 
 /** Customer of the restaurant. */
-
 class Customer {
-  constructor({ id, firstName, lastName, phone, notes }) {
+  constructor({ id, firstName, lastName, fullName, phone, notes }) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -15,7 +14,6 @@ class Customer {
   }
 
   /** find all customers. */
-
   static async all() {
     const results = await db.query(
       `SELECT id, 
@@ -30,7 +28,6 @@ class Customer {
   }
 
   /** get a customer by ID. */
-
   static async get(id) {
     const results = await db.query(
       `SELECT id, 
@@ -53,14 +50,30 @@ class Customer {
     return new Customer(customer);
   }
 
-  /** get all reservations for this customer. */
 
+  /** return ful name of customer. */
+  static async fullname(id) {
+    const result = await db.query(
+      `SELECT id, 
+         first_name AS "firstName",  
+         last_name AS "lastName" 
+        FROM customers WHERE id = $1`,
+      [id]
+    );
+      const customer = result.rows[0];
+
+      let fName = customer.firstName;
+      let lName = customer.lastName
+      return (`${fName} ${lName}`)
+  }
+
+
+  /** get all reservations for this customer. */
   async getReservations() {
     return await Reservation.getReservationsForCustomer(this.id);
   }
 
   /** save this customer. */
-
   async save() {
     if (this.id === undefined) {
       const result = await db.query(
@@ -72,8 +85,7 @@ class Customer {
       this.id = result.rows[0].id;
     } else {
       await db.query(
-        `UPDATE customers SET first_name=$1, last_name=$2, phone=$3, notes=$4
-             WHERE id=$5`,
+        `UPDATE customers SET first_name=$1, last_name=$2, phone=$3, notes=$4 WHERE id=$5`,
         [this.firstName, this.lastName, this.phone, this.notes, this.id]
       );
     }

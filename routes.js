@@ -1,11 +1,9 @@
-/** Routes for Lunchly */
-
 const express = require("express");
-
 const Customer = require("./models/customer");
 const Reservation = require("./models/reservation");
-
 const router = new express.Router();
+
+// #######################
 
 /** Homepage: show list of customers. */
 
@@ -59,6 +57,7 @@ router.get("/:id/", async function(req, res, next) {
     return next(err);
   }
 });
+
 
 /** Show form to edit a customer. */
 
